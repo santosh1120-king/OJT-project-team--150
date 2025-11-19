@@ -39,4 +39,5 @@ if (profileBtn) {
     });
 }
 
+
 document.addEventListener('DOMContentLoaded', updateNavigation);
