@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SecureAuth</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">SecureAuth</div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="login.html" class="nav-link active" id="navLogin">Login</a>
+                <a href="register.html" class="nav-link" id="navRegister">Register</a>
+                <a href="#" class="nav-link" id="navProfile" style="display:none;">Profile</a>
+                <a href="#" class="nav-link" id="navLogout" style="display:none;">Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1>Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to your account</p>
+
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="you@example.com">
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                        <span class="error-message" id="passwordError"></span>
+                    </div>
+
+                    <div class="message" id="successMessage" style="display:none;"></div>
+                    <div class="message error" id="errorMessage" style="display:none;"></div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="register.html">Create one</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SecureAuth. OJT Project - Semester 1</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    document.getElementById('successMessage').textContent = 'Login successful! Redirecting...';
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'profile.html';
+                    }, 2000);
+                } else {
+                    document.getElementById('errorMessage').textContent = data.detail || 'Login failed';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Connection error. Please try again.';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

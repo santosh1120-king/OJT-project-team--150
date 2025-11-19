@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Auth System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">SecureAuth</div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="login.html" class="nav-link" id="navLogin">Login</a>
+                <a href="register.html" class="nav-link" id="navRegister">Register</a>
+                <a href="#" class="nav-link" id="navProfile" style="display:none;">Profile</a>
+                <a href="#" class="nav-link" id="navLogout" style="display:none;">Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Secure User Authentication</h1>
+                <p>A professional-grade authentication system with JWT tokens and password hashing</p>
+                <div class="hero-buttons">
+                    <a href="register.html" class="btn btn-primary">Get Started</a>
+                    <a href="login.html" class="btn btn-secondary">Sign In</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <path d="M 100 40 Q 140 80 100 120 Q 60 80 100 40" fill="currentColor" opacity="0.7"/>
+                </svg>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Why Choose Us?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Hashing</h3>
+                    <p>Passwords secured with bcrypt hashing algorithm</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔑</div>
+                    <h3>JWT Tokens</h3>
+                    <p>Industry-standard JWT authentication tokens</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✓</div>
+                    <h3>Easy Validation</h3>
+                    <p>Email validation and user verification</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast & Reliable</h3>
+                    <p>Built with FastAPI for optimal performance</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SecureAuth. OJT Project - Semester 1</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

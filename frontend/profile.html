@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - SecureAuth</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo">SecureAuth</div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="login.html" class="nav-link" id="navLogin" style="display:none;">Login</a>
+                <a href="register.html" class="nav-link" id="navRegister" style="display:none;">Register</a>
+                <a href="profile.html" class="nav-link active" id="navProfile">Profile</a>
+                <a href="#" class="nav-link" id="navLogout">Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="profile-card">
+                <h1>Your Profile</h1>
+                <div id="profileContent" style="display:none;">
+                    <div class="profile-info">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <span id="avatarInitials"></span>
+                            </div>
+                            <div class="profile-details">
+                                <h2 id="userFullName"></h2>
+                                <p id="userEmail"></p>
+                                <p class="profile-meta">Member since <span id="joinDate"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="updateForm" class="profile-form">
+                        <h3>Update Profile</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" placeholder="Your first name">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" placeholder="Your last name">
+                            </div>
+                        </div>
+
+                        <div class="message" id="successMessage" style="display:none;"></div>
+                        <div class="message error" id="errorMessage" style="display:none;"></div>
+
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+
+                    <div class="danger-zone">
+                        <h3>Danger Zone</h3>
+                        <button id="deleteBtn" class="btn btn-danger">Delete Account</button>
+                    </div>
+                </div>
+
+                <div id="loadingMessage" class="message">Loading profile...</div>
+                <div id="unauthorizedMessage" class="message error" style="display:none;">
+                    You are not logged in. <a href="login.html">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SecureAuth. OJT Project - Semester 1</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (!token || !user.id) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('unauthorizedMessage').style.display = 'block';
+                document.getElementById('profileContent').style.display = 'none';
+                return;
+            }
+
+        
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
+            document.getElementById('userFullName').textContent = fullName;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('avatarInitials').textContent = getInitials(fullName);
+            document.getElementById('joinDate').textContent = new Date(user.created_at).toLocaleDateString();
+
+            document.getElementById('firstName').value = user.first_name || '';
+            document.getElementById('lastName').value = user.last_name || '';
+
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+        });
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('access_token');
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            try {
+                const response = await fetch('http://localhost:8000/api/users/me', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('user', JSON.stringify(data));
+                    document.getElementById('successMessage').textContent = 'Profile updated successfully!';
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                } else {
+                    document.getElementById('errorMessage').textContent = 'Failed to update profile';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Connection error';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch('http://localhost:8000/api/users/me', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Failed to delete account');
+                }
+            } catch (error) {
+                alert('Connection error');
+            }
+        });
+    </script>
+</body>
+</html>
